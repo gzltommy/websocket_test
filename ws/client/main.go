@@ -14,12 +14,29 @@ func main() {
 	client.HandshakeTimeout = time.Second    // 设置超时时间
 	client.Proxy = http.ProxyFromEnvironment // 设置代理
 	client.TLSClientConfig = &tls.Config{}   // 设置 tls 配置
-	conn, _, err := client.Dial("ws://127.0.0.1:9501", nil)
+	conn, _, err := client.Dial("ws://192.168.24.147:80", nil)
 	if err != nil {
 		panic(err)
 	}
 	defer conn.Close()
-	err = conn.WriteMessage(websocket.TextMessage, []byte("hello word"))
+
+	//mMsg := metaverse.MicroMessage{
+	//	MessageId: 0,
+	//	RequireId: 0,
+	//	Guid:      0,
+	//	Guids:     nil,
+	//	SpaceId:   0,
+	//	ConnId:    "",
+	//	Key:       "",
+	//	Body:      nil,
+	//	BodyMsgId: 0,
+	//}
+	//
+	//body := metaverse.CS_Login{Token: "aaaaa"}
+	//
+	//data, _ := proto.Marshal(msg)
+
+	err = conn.WriteMessage(websocket.BinaryMessage, []byte("hello word"))
 	if err != nil {
 		panic(err)
 	}

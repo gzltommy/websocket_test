@@ -26,7 +26,7 @@ func main() {
 		}
 	})
 	s.SetServerRoot(gfile.MainPkgPath())
-	s.EnableHTTPS("../../https/server.crt", "../../https/server.key")
+	s.EnableHTTPS("./server.crt", "./server.key")
 	s.SetPort(8199)
 	s.Run()
 }
