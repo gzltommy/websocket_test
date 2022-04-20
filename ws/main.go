@@ -20,28 +20,24 @@ func main() {
 			r.Exit()
 		}
 
+		fmt.Println("=========连接来了========")
+
 		for {
-			//msgType, msg, err := ws.ReadMessage()
-			//if err != nil {
-			//	fmt.Println("----ws.ReadMessage----", err)
-			//	//return
-			//}
+			msgType, msg, err := ws.ReadMessage()
+			if err != nil {
+				fmt.Println("----ws.ReadMessage----", err)
+				return
+			}
+
+			fmt.Println("-------xh------")
 
 			time.Sleep(time.Second)
-			if err = ws.WriteMessage(1, []byte("666666")); err != nil {
+			if err = ws.WriteMessage(msgType, msg); err != nil {
 				fmt.Println("----ws.ReadMessage-------", err)
 			}
 		}
 	})
 	s.SetServerRoot(gfile.MainPkgPath())
 	s.SetPort(8199)
-	go s.Run()
-
-	time.Sleep(time.Second * 10)
-	fmt.Println("======= close ======")
-	ws.Close()
-
-	fmt.Println("======= close ===222===")
-	ws.Close()
-	time.Sleep(time.Second * 1000)
+	s.Run()
 }

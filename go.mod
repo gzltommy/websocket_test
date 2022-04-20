@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/gogf/gf v1.16.6
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
 )
