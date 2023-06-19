@@ -5,6 +5,7 @@ import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 	"github.com/gogf/gf/os/gfile"
+	"github.com/gorilla/websocket"
 	"time"
 )
 
@@ -22,18 +23,30 @@ func main() {
 
 		fmt.Println("=========连接来了========")
 
+		ticker := time.NewTimer(time.Second * 3)
 		for {
-			msgType, msg, err := ws.ReadMessage()
-			if err != nil {
-				fmt.Println("----ws.ReadMessage----", err)
-				return
-			}
+			select {
+			case <-ticker.C:
+				if err := ws.WriteControl(
+					websocket.PingMessage,
+					nil,
+					time.Now().Add(time.Second)); err != nil {
+					return
+				}
+			default:
+				ws.SetReadDeadline(time.Now().Add(time.Minute * 3))
+				msgType, msg, err := ws.ReadMessage()
+				if err != nil {
+					fmt.Printf("----ws.ReadMessage---- %v,%v,%v \n", msgType, msg, err)
+					return
+				}
 
-			fmt.Println("-------xh------")
+				fmt.Println("-------xh------", string(msg))
 
-			time.Sleep(time.Second)
-			if err = ws.WriteMessage(msgType, msg); err != nil {
-				fmt.Println("----ws.ReadMessage-------", err)
+				time.Sleep(time.Second)
+				if err = ws.WriteMessage(msgType, msg); err != nil {
+					fmt.Println("----ws.ReadMessage-------", err)
+				}
 			}
 		}
 	})

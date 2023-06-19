@@ -29,29 +29,38 @@ func main() {
 			return
 		}
 		defer conn.Close()
+
+		ticker := time.NewTimer(time.Minute * 3)
 		for {
-			mt, message, err := conn.ReadMessage()
-			if err != nil {
-				log.Println("-------read:", err)
-				break
-			}
-			fmt.Println("==========", mt, message)
-			//websocket.BinaryMessage
-			err = conn.WriteMessage(mt, message)
-			if err != nil {
-				log.Println("+++++++++++write:", err)
-				break
+			select {
+			case <-ticker.C:
+				// 定时发心跳
+				if err := conn.WriteControl(
+					websocket.PingMessage,
+					nil,
+					time.Now().Add(time.Second)); err != nil {
+					return
+				}
+			default:
+				err = conn.SetReadDeadline(time.Now().Add(time.Minute * 3))
+				msgType, msg, err := conn.ReadMessage()
+				if err != nil {
+					fmt.Printf("----ws.ReadMessage-fail--- %v,%v,%v \n", msgType, msg, err)
+					return
+				}
+
+				fmt.Println("-------收到消息：------", msgType, string(msg))
+
+				time.Sleep(time.Second)
+				if err = conn.WriteMessage(msgType, msg); err != nil {
+					fmt.Println("----ws.ReadMessage---fail----", err)
+					return
+				}
 			}
 		}
 	})
+
 	go http.ListenAndServe(":8199", nil)
 
-	time.Sleep(time.Second * 5)
-	conn.Close()
-	fmt.Println("===guan bi==")
-	time.Sleep(time.Second * 5)
-	conn.Close()
-	fmt.Println("===guan bi==")
-	time.Sleep(time.Second * 10000)
-
+	time.Sleep(time.Hour * 1)
 }
